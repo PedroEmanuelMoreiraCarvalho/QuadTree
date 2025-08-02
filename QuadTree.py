@@ -52,7 +52,7 @@ class QuadTree:
             if len(self.points) == 0:
                 return
             self.points.pop()
-            self.total -= 1
+            self.diminute()
         else:
             half_w = self.w // 2
             half_h = self.h // 2
@@ -65,9 +65,16 @@ class QuadTree:
                 destin[0] = 1
 
             self.leafs[destin[0]][destin[1]].remove(pos)
-            self.total -= 1
-            if(self.total < self.max_points):
-                self.undivide()
+
+    def diminute(self):
+        self.total -= 1
+
+        if(self.divided and self.total < self.max_points):
+            self.undivide()
+        
+        if self.mother == None:
+            return
+        self.mother.diminute()
 
     def divide(self):
         half_w = self.w // 2
@@ -87,12 +94,14 @@ class QuadTree:
         self.divided = False
 
         points = []
-        points += self.leafs[0][0].points
-        points += self.leafs[0][1].points
-        points += self.leafs[1][0].points
-        points += self.leafs[1][1].points
+        points += self.leafs[0][0].points.copy()
+        points += self.leafs[0][1].points.copy()
+        points += self.leafs[1][0].points.copy()
+        points += self.leafs[1][1].points.copy()
 
         self.points = points
+
+        self.leafs = [[None, None],[None, None]]
 
     def update(self):
         pass
